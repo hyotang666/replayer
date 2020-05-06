@@ -2,9 +2,12 @@
 (in-package :asdf)
 (defsystem "replayer"
   :version
-  "0.0.0"
+  "0.1.0"
   :depends-on
-  nil
+  (
+   "mixalot" ; Audio mixer.
+   "wav-parser" ; Wav file reader/writer.
+   )
   :pathname
   "src/"
   :components
