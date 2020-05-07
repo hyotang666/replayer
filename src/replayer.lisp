@@ -98,11 +98,16 @@
           (play list))
         (setq *played* nil))))
 
-(defmethod play ((string string)) (play (truename string)))
+(defmethod play ((string string)) (play (pathname string)))
 
 (defmethod play ((pathname pathname))
-  (setf pathname (truename pathname))
-  (play (wav-parser:wav pathname)))
+  (handler-case (truename pathname)
+    (error (c)
+      (warn (princ-to-string c)))
+    (:no-error (pathname)
+      (if (uiop:directory-pathname-p pathname)
+          (warn "Ignore directory pathname ~S" pathname)
+          (play (wav-parser:wav pathname))))))
 
 (defmethod play ((wav r-iff:group))
   (setf *play*
