@@ -21,6 +21,27 @@
       (prog1 (cadr *queue*) (setf *queue* (cons nil nil)))
       (prog1 (cadr *queue*) (setf (cdr *queue*) (cddr *queue*)))))
 
+(defun q-random-pop (&optional index)
+  (labels ((entry (index list)
+             (if (zerop index)
+                 (q-pop)
+                 (body index list)))
+           (body (index list)
+             (if (zerop (1- index))
+                 (if (cddr list) ; (car . (cdr . (cddr ...)))
+                     (prog1 (cadr list) (rplacd list (cddr list)))
+                     ;; (car . (cdr . nil))
+                     (prog1 (cadr list)
+                       (rplacd list nil)
+                       (rplaca *queue* list)))
+                 (body (1- index) (cdr list)))))
+    (if index
+        (entry index (cdr *queue*))
+        (let ((length (length (cdr *queue*))))
+          (if (zerop length)
+              nil
+              (entry (random length) (cdr *queue*)))))))
+
 (defun q-append (items) (mapc #'q-push items) *queue*)
 
 (defun have-item-p () (car *queue*))
@@ -35,7 +56,11 @@
 
 (declaim (type (member :one :all nil) *repeat*))
 
-(defparameter *repeat* nil)
+(defvar *repeat* nil)
+
+(defvar *shuffle* nil)
+
+(defvar *played* nil)
 
 (defmethod mixalot:mixer-remove-streamer :after ((player player) streamer)
   (setq *play* nil)
@@ -45,9 +70,16 @@
      (mixalot:mixer-add-streamer player streamer))
     (:all
      (mixalot:streamer-seek streamer player 0)
-     (q-push streamer)
-     (play (q-pop)))
-    ((nil) (play (q-pop)))))
+     (push streamer *played*)
+     (play
+       (if *shuffle*
+           (q-random-pop)
+           (q-pop))))
+    ((nil)
+     (play
+       (if *shuffle*
+           (q-random-pop)
+           (q-pop))))))
 
 ;;;; SPECIALS
 
@@ -58,7 +90,13 @@
 (defgeneric play
     (thing))
 
-(defmethod play ((do-nothing null)) do-nothing)
+(defmethod play ((thing null))
+  (when *shuffle*
+    (if (eq :all *repeat*)
+        (let ((list *played*))
+          (setq *played* nil)
+          (play list))
+        (setq *played* nil))))
 
 (defmethod play ((string string)) (play (truename string)))
 
@@ -74,9 +112,11 @@
                                           (car (r-iff:retrieve "data" wav)))))))
 
 (defmethod play ((list list))
-  (if (have-item-p)
-      (q-append list)
-      (progn (q-append (cdr list)) (play (car list)))))
+  (q-append list)
+  (play
+    (if *shuffle*
+        (q-random-pop)
+        (q-pop))))
 
 (defmethod play ((streamer mixalot:vector-streamer))
   (setf *play* (mixalot:mixer-add-streamer *mixer* streamer)))
@@ -92,5 +132,6 @@
 (defun stop ()
   (when *play*
     (setq *repeat* nil)
+    (setq *played* nil)
     (q-clear)
     (skip)))
