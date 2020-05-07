@@ -33,9 +33,15 @@
 
 (defvar *play* nil)
 
+(defparameter *repeat* nil)
+
 (defmethod mixalot:mixer-remove-streamer :after ((player player) streamer)
   (setq *play* nil)
-  (play (q-pop)))
+  (if *repeat*
+      (progn
+       (mixalot:streamer-seek streamer player 0)
+       (mixalot:mixer-add-streamer player streamer))
+      (play (q-pop))))
 
 ;;;; SPECIALS
 
