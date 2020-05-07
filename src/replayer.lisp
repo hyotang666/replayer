@@ -33,15 +33,21 @@
 
 (defvar *play* nil)
 
+(declaim (type (member :one :all nil) *repeat*))
+
 (defparameter *repeat* nil)
 
 (defmethod mixalot:mixer-remove-streamer :after ((player player) streamer)
   (setq *play* nil)
-  (if *repeat*
-      (progn
-       (mixalot:streamer-seek streamer player 0)
-       (mixalot:mixer-add-streamer player streamer))
-      (play (q-pop))))
+  (ecase *repeat*
+    (:one
+     (mixalot:streamer-seek streamer player 0)
+     (mixalot:mixer-add-streamer player streamer))
+    (:all
+     (mixalot:streamer-seek streamer player 0)
+     (q-push streamer)
+     (play (q-pop)))
+    ((nil) (play (q-pop)))))
 
 ;;;; SPECIALS
 
@@ -71,6 +77,9 @@
   (if (have-item-p)
       (q-append list)
       (progn (q-append (cdr list)) (play (car list)))))
+
+(defmethod play ((streamer mixalot:vector-streamer))
+  (setf *play* (mixalot:mixer-add-streamer *mixer* streamer)))
 
 ;;;; SKIP
 
