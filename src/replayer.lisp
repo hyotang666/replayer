@@ -86,3 +86,11 @@
 (defun skip ()
   (when *play*
     (mixalot:mixer-remove-streamer *mixer* *play*)))
+
+;;;; STOP
+
+(defun stop ()
+  (when *play*
+    (setq *repeat* nil)
+    (q-clear)
+    (skip)))
