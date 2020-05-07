@@ -31,7 +31,10 @@
 
 (defstruct (player (:include mixalot:mixer)))
 
+(defvar *play* nil)
+
 (defmethod mixalot:mixer-remove-streamer :after ((player player) streamer)
+  (setq *play* nil)
   (play (q-pop)))
 
 ;;;; SPECIALS
@@ -52,12 +55,19 @@
   (play (wav-parser:wav pathname)))
 
 (defmethod play ((wav r-iff:group))
-  (mixalot:mixer-add-streamer *mixer*
-                              (mixalot:make-fast-vector-streamer-interleaved-stereo
-                                (r-iff:data<-chunk
-                                  (car (r-iff:retrieve "data" wav))))))
+  (setf *play*
+          (mixalot:mixer-add-streamer *mixer*
+                                      (mixalot:make-fast-vector-streamer-interleaved-stereo
+                                        (r-iff:data<-chunk
+                                          (car (r-iff:retrieve "data" wav)))))))
 
 (defmethod play ((list list))
   (if (have-item-p)
       (q-append list)
       (progn (q-append (cdr list)) (play (car list)))))
+
+;;;; SKIP
+
+(defun skip ()
+  (when *play*
+    (mixalot:mixer-remove-streamer *mixer* *play*)))
