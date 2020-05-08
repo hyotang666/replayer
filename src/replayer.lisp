@@ -136,7 +136,7 @@
 
 (defun stop ()
   (when *play*
-    (setq *repeat* nil)
-    (setq *played* nil)
-    (q-clear)
-    (skip)))
+    (let ((*repeat* nil))
+      (setq *played* nil)
+      (q-clear)
+      (skip))))
