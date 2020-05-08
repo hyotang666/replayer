@@ -140,3 +140,84 @@
       (setq *played* nil)
       (q-clear)
       (skip))))
+
+;;;; Database
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defmacro with-db (&body body)
+    `(let ((datafly:*connection*
+            (datafly:connect-cached :sqlite3
+                                    :database-name (merge-pathnames "db/db"
+                                                                    (asdf:system-source-directory
+                                                                      (asdf:find-system
+                                                                        :replayer))))))
+       ,@body)))
+
+(with-db
+  (datafly:execute
+    (sxql:create-table (file :if-not-exists t)
+      ((pathname :type 'tinytext :not-null t :primary-key t))))
+  (datafly:execute
+    (sxql:create-table (tag :if-not-exists t)
+      ((name :type 'tinytext :not-null t :primary-key t))))
+  (datafly:execute
+    (sxql:create-table (tag-map :if-not-exists t)
+      ((tag :type 'integer)
+       (file :type 'tinytext))
+      (sxql:foreign-key '(tag) :references '(tag name))
+      (sxql:foreign-key '(file) :references '(file pathname)))))
+
+(defun delete-tables ()
+  (with-db
+    (dolist (table '(file tag tag-map))
+      (datafly:execute (sxql:drop-table table :if-exists t)))))
+
+(defun tag (tag files)
+  (with-db
+    (let ((tag?
+           (datafly:retrieve-one
+             (sxql:select :*
+               (sxql:from 'tag)
+               (sxql:where (:= 'name tag))))))
+      (unless tag?
+        (datafly:execute
+          (sxql:insert-into :tag
+            (sxql:set= :name tag))))
+      (dolist (file (mapcar #'namestring files))
+        (let ((file?
+               (datafly:retrieve-one
+                 (sxql:select :*
+                   (sxql:from 'file)
+                   (sxql:where (:= 'pathname file))))))
+          (unless file?
+            (datafly:execute
+              (sxql:insert-into :file
+                (sxql:set= :pathname file))))
+          (let ((tag-map
+                 (datafly:retrieve-one
+                   (sxql:select :*
+                     (sxql:from 'tag-map)
+                     (sxql:where
+                      (:and (:= 'tag tag)
+                            (:= 'file file)))
+                     (sxql:limit 1)))))
+            (unless tag-map
+              (datafly:execute
+                (sxql:insert-into :tag-map
+                  (sxql:set= :tag tag :file file))))))))))
+
+(defun tag-files (tag)
+  (with-db
+    (mapcar (lambda (elt) (getf elt :file))
+            (datafly:retrieve-all
+              (sxql:select :tag-map.file
+                (sxql:from 'tag-map)
+                (sxql:where (:= 'tag tag)))))))
+
+(defun file-tags (file)
+  (with-db
+    (mapcar (lambda (elt) (getf elt :tag))
+            (datafly:retrieve-all
+              (sxql:select :tag-map.tag
+                (sxql:from 'tag-map)
+                (sxql:where (:= 'file (namestring file))))))))

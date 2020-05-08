@@ -7,6 +7,8 @@
   (
    "mixalot" ; Audio mixer.
    "wav-parser" ; Wav file reader/writer.
+   "datafly" ; Database.
+   "sxql" ; SQL generator.
    )
   :pathname
   "src/"
