@@ -2,10 +2,11 @@
 (in-package :asdf)
 (defsystem "replayer"
   :version
-  "0.8.0"
+  "0.9.0"
   :depends-on
   (
    "mixalot" ; Audio mixer.
+   "mixalot-mp3" ; MP3 streamer.
    "wav-parser" ; Wav file reader/writer.
    "datafly" ; Database.
    "sxql" ; SQL generator.

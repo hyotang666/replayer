@@ -107,7 +107,14 @@
     (:no-error (pathname)
       (if (uiop:directory-pathname-p pathname)
           (warn "Ignore directory pathname ~S" pathname)
-          (play (wav-parser:wav pathname))))))
+          (let ((type (pathname-type pathname)))
+            (cond ((string= "wav" type) (play (wav-parser:wav pathname)))
+                  ((string= "mp3" type)
+                   (play (mixalot-mp3:make-mp3-streamer (namestring pathname))))
+                  (t (warn "NIY file type ~S" type))))))))
+
+(defmethod play ((mp3 mixalot-mp3:mp3-streamer))
+  (setf *play* (mixalot:mixer-add-streamer *mixer* mp3)))
 
 (defmethod play ((wav r-iff:group))
   (setf *play*
