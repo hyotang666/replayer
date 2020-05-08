@@ -221,3 +221,13 @@
               (sxql:select :tag-map.tag
                 (sxql:from 'tag-map)
                 (sxql:where (:= 'file (namestring file))))))))
+
+;;;; TAG
+
+(defstruct tag name)
+
+(defmethod play ((tag tag))
+  (let ((files (tag-files (tag-name tag))))
+    (if files
+        (play files)
+        (warn "Not exists tag ~S" tag))))
