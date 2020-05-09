@@ -6,6 +6,8 @@
            #:*mixer*
            #:*repeat*
            #:*shuffle*
+           ;; Conditions
+           #:missing-file
            ;; player.
            #:create-player
            ;; Main APIs.
@@ -101,6 +103,13 @@
 
 (defvar *mixer* (create-player))
 
+;;;; CONDITIONS
+
+(define-condition missing-file (warning) ((file :initarg :file))
+  (:report
+   (lambda (condition stream)
+     (format stream "Missing file. ~S" (slot-value condition 'file)))))
+
 ;;;; PLAY
 
 (defgeneric play
@@ -118,8 +127,8 @@
 
 (defmethod play ((pathname pathname))
   (handler-case (truename pathname)
-    (error (c)
-      (warn (princ-to-string c)))
+    (error ()
+      (warn 'missing-file :file pathname))
     (:no-error (pathname)
       (if (uiop:directory-pathname-p pathname)
           (warn "Ignore directory pathname ~S" pathname)
