@@ -14,7 +14,7 @@ exec ros -Q -- $0 "$@"
 (defun parse-argv (argv)
   (labels ((rec (list &optional options args)
              (if (endp list)
-                 (values (read-from-string (car argv))
+                 (values (read-from-string (or (car argv) "help"))
                          (nreverse options)
                          args)
                  (if (uiop:string-prefix-p "--" (car list))
