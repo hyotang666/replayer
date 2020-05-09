@@ -2,7 +2,19 @@
 
 (defpackage :replayer
   (:use :cl)
-  (:export))
+  (:export ;; Special vars.
+           #:*mixer*
+           #:*repeat*
+           #:*shuffle*
+           ;; Main APIs.
+           #:play
+           #:stop
+           #:skip
+           ;; Tag operations
+           #:make-tag
+           #:tag-files
+           #:file-tags
+           #:tag))
 
 (in-package :replayer)
 

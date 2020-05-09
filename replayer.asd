@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem "replayer"
   :version
-  "0.9.0"
+  "1.0.0"
   :depends-on
   (
    "mixalot" ; Audio mixer.
