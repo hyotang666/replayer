@@ -30,6 +30,13 @@
 
 (defroute "/" () (render #P"index.html"))
 
+(defroute ("/play/file" :method :post) (&key file)
+  (handler-case (replayer:play file)
+    (replayer:missing-file (c)
+      `(404 #|Not Found|# nil (,(princ-to-string c))))
+    (:no-error (&rest args)
+      (declare (ignore args)) `(200 #|ok|# nil ("Done")))))
+
 ;;
 ;; Error pages
 
