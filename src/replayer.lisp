@@ -150,10 +150,11 @@
 
 (defmethod play ((list list))
   (q-append list)
-  (play
-    (if *shuffle*
-        (q-random-pop)
-        (q-pop))))
+  (unless *play*
+    (play
+      (if *shuffle*
+          (q-random-pop)
+          (q-pop)))))
 
 (defmethod play ((streamer mixalot:vector-streamer))
   (setf *play* (mixalot:mixer-add-streamer *mixer* streamer)))
