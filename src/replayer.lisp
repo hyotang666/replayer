@@ -6,6 +6,8 @@
            #:*mixer*
            #:*repeat*
            #:*shuffle*
+           ;; player.
+           #:create-player
            ;; Main APIs.
            #:play
            #:stop
@@ -64,6 +66,8 @@
 
 (defstruct (player (:include mixalot:mixer)))
 
+(defun create-player () (mixalot:create-mixer :constructor 'make-player))
+
 (defvar *play* nil)
 
 (declaim (type (member :one :all nil) *repeat*))
@@ -95,7 +99,7 @@
 
 ;;;; SPECIALS
 
-(defvar *mixer* (mixalot:create-mixer :constructor 'make-player))
+(defvar *mixer* (create-player))
 
 ;;;; PLAY
 
