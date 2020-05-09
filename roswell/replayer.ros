@@ -42,6 +42,10 @@ exec ros -Q -- $0 "$@"
          (dolist(arg args)
            (dex:post (format nil "http://localhost:~A/play/push" (getf options :port 5000))
                      :content `(("FILE" . ,arg))))))
+      (tag
+        (assert (<= 2 (length args)))
+        (ql:quickload :replayer :silent t)
+        (replayer:tag (car args) (cdr args)))
       (version
         (format t "Server: ~A~%Replayer: ~A~%"
                 (asdf:system-version (asdf:find-system :replayer-server))
