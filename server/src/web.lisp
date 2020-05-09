@@ -45,6 +45,14 @@
     (:no-error (pathname)
       (replayer:play (list pathname)) `(200 #|ok|# nil ("Pushed")))))
 
+(defroute /tag/file ("/tag/file" :method :post)
+  (&key tag file)
+  (handler-case (truename file)
+    (error (c)
+      `(404 #|Not found|# nil (,(princ-to-string c))))
+    (:no-error (pathname)
+      (replayer:tag tag (list pathname)) `(200 #|ok|# nil ("Done")))))
+
 ;;
 ;; Error pages
 
