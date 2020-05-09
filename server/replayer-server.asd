@@ -1,6 +1,6 @@
 ; vim: ft=lisp
 (defsystem "replayer-server"
-  :version "0.2.0"
+  :version "0.3.0"
   :author ""
   :license ""
   :depends-on ("clack"

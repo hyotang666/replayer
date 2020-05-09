@@ -37,6 +37,14 @@
     (:no-error (&rest args)
       (declare (ignore args)) `(200 #|ok|# nil ("Done")))))
 
+(defroute /play/push.post ("/play/push" :method :post)
+  (&key file)
+  (handler-case (truename file)
+    (error (c)
+      `(404 #|Not found|# nil (,(princ-to-string c))))
+    (:no-error (pathname)
+      (replayer:play (list pathname)) `(200 #|ok|# nil ("Pushed")))))
+
 ;;
 ;; Error pages
 
