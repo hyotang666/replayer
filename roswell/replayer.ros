@@ -30,22 +30,25 @@ exec ros -Q -- $0 "$@"
     (case subcommand
       (start
         (ql:quickload :replayer-server :silent t)
-       (replayer-server:start :use-thread nil
-                              :debug nil
-                              :port (getf options :port 5000)))
+       (uiop:symbol-call :replayer-server :start
+                         :use-thread nil
+                         :debug nil
+                         :port (getf options :port 5000)))
       (play
         (assert args)
         (ql:quickload :dexador :silent t)
-       (dex:post (format nil "http://localhost:~A/play/file" (getf options :port 5000))
-                 :content `(("FILE" . ,(car args))))
+       (uiop:symbol-call :dex :post
+                         (format nil "http://localhost:~A/play/file" (getf options :port 5000))
+                         :content `(("FILE" . ,(car args))))
        (when (cdr args)
          (dolist(arg args)
-           (dex:post (format nil "http://localhost:~A/play/push" (getf options :port 5000))
-                     :content `(("FILE" . ,arg))))))
+           (uiop:symbol-call :dex :post
+                             (format nil "http://localhost:~A/play/push" (getf options :port 5000))
+                             :content `(("FILE" . ,arg))))))
       (tag
         (assert (<= 2 (length args)))
         (ql:quickload :replayer :silent t)
-        (replayer:tag (car args) (cdr args)))
+        (uiop:symbol-call :replayer :tag (car args) (cdr args)))
       (version
         (format t "Server: ~A~%Replayer: ~A~%"
                 (asdf:system-version (asdf:find-system :replayer-server))
