@@ -1,0 +1,48 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  )
+
+(defpackage :ros.script.replayer.3797989832
+  (:use :cl))
+(in-package :ros.script.replayer.3797989832)
+
+(defun parse-argv (argv)
+  (labels ((rec (list &optional options args)
+             (if (endp list)
+                 (values (read-from-string (car argv))
+                         (nreverse options)
+                         args)
+                 (if (uiop:string-prefix-p "--" (car list))
+                     (rec (cddr list) (cons (cadr list)
+                                            (cons (let ((*package* (find-package :keyword)))
+                                                    (read-from-string (car list) t t :start 2))
+                                                  options)))
+                     (rec nil options list)))))
+    (rec (cdr argv))))
+
+(defun main (&rest argv)
+  (multiple-value-bind (subcommand options args) (parse-argv argv)
+    (case subcommand
+      (start
+        (ql:quickload :replayer-server :silent t)
+       (replayer-server:start :use-thread nil
+                              :debug nil
+                              :port (getf options :port 5000)))
+      (play
+        (ql:quickload :dexador)
+       (dex:post (format nil "http://localhost:~A/play/file" (getf options :port 5000))
+                 :content `(("FILE" . ,(car args)))))
+      (version
+        (format t "Server: ~A~%Replayer: ~A~%"
+                (asdf:system-version (asdf:find-system :replayer-server))
+                (asdf:system-version (asdf:find-system :replayer))))
+      (otherwise
+        (format t "~<Supported subcommands: ~;~{~A~^~:@_~}~%~;~:>"
+                '(("start" "play" "version")))))))
+
+;;; vim: set ft=lisp lisp:
