@@ -35,7 +35,7 @@ exec ros -Q -- $0 "$@"
                               :port (getf options :port 5000)))
       (play
         (assert args)
-        (ql:quickload :dexador)
+        (ql:quickload :dexador :silent t)
        (dex:post (format nil "http://localhost:~A/play/file" (getf options :port 5000))
                  :content `(("FILE" . ,(car args))))
        (when (cdr args)
