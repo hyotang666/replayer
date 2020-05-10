@@ -43,7 +43,29 @@ Logical expressions are supported.
 ```
 
 ### From shell
-TODO
+Start replayer server.
+
+```shell
+replayer start
+```
+
+Play one music.
+
+```shell
+replayer play path/to/music.wav
+```
+
+Play some files
+
+```shell
+replayer play $(ls music/directory/*.wav)
+```
+
+Play list
+
+```shell
+cat play-list | xargs replayer play
+```
 
 ## From developer
 
