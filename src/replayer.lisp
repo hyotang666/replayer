@@ -180,10 +180,11 @@
   (defmacro with-db (&body body)
     `(let ((datafly:*connection*
             (datafly:connect-cached :sqlite3
-                                    :database-name (merge-pathnames "db/db"
-                                                                    (asdf:system-source-directory
-                                                                      (asdf:find-system
-                                                                        :replayer))))))
+                                    :database-name (ensure-directories-exist
+                                                     (merge-pathnames "db/db"
+                                                                      (asdf:system-source-directory
+                                                                        (asdf:find-system
+                                                                          :replayer)))))))
        ,@body)))
 
 (with-db
