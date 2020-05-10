@@ -58,4 +58,31 @@ SBCL
 ### Tested with
 
 ## Installation
-TODO
+### REQUIREMENT
+
+* [roswell](https://github.com/roswell/roswell)
+* [sqlite3](https://sqlite.org/index.html)
+
+### REPL only
+
+```shell
+ros install hyotang666/r-iff hyotang666/wav-parser hyotang666/replayer
+```
+
+```lisp
+* (ql:quickload :replayer)
+```
+
+### With shell
+
+```shell
+ros build $HOME/.roswell/local-projects/hyotang666/roswell/replayer.ros
+
+ros exec replayer
+```
+
+If you want reduce `ros exec` do like
+
+```shell
+echo 'export PATH="$HOME/.roswell/bin:$PATH"' >> ~/.zshrc
+```
