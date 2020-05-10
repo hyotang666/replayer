@@ -216,7 +216,7 @@
         (datafly:execute
           (sxql:insert-into :tag
             (sxql:set= :name tag))))
-      (dolist (file (mapcar #'namestring files))
+      (dolist (file (mapcar (lambda (exp) (namestring (truename exp))) files))
         (let ((file?
                (datafly:retrieve-one
                  (sxql:select :*
