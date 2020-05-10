@@ -240,12 +240,20 @@
                   (sxql:set= :tag tag :file file))))))))))
 
 (defun tag-files (tag)
-  (with-db
-    (mapcar (lambda (elt) (getf elt :file))
-            (datafly:retrieve-all
-              (sxql:select :tag-map.file
-                (sxql:from 'tag-map)
-                (sxql:where (:= 'tag tag)))))))
+  (if (atom tag)
+      (with-db
+        (mapcar (lambda (elt) (getf elt :file))
+                (datafly:retrieve-all
+                  (sxql:select :tag-map.file
+                    (sxql:from 'tag-map)
+                    (sxql:where (:= 'tag tag))))))
+      (ecase (car tag)
+        (and
+         (reduce (lambda (a b) (intersection a b :test #'equal))
+                 (mapcar #'tag-files (cdr tag))))
+        (or
+         (reduce (lambda (a b) (union a b :test #'equal))
+                 (mapcar #'tag-files (cdr tag)))))))
 
 (defun file-tags (file)
   (with-db
@@ -257,10 +265,10 @@
 
 ;;;; TAG
 
-(defstruct tag name)
+(defstruct tag exp)
 
 (defmethod play ((tag tag))
-  (let ((files (tag-files (tag-name tag))))
+  (let ((files (tag-files (tag-exp tag))))
     (if files
         (play files)
         (warn "Not exists tag ~S" tag))))
