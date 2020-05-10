@@ -1,6 +1,9 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem "replayer"
+  :description "Music player in REPL."
+  :author "SATO Shinichi"
+  :license "MIT"
   :version
   "3.1.1"
   :depends-on
