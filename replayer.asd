@@ -5,7 +5,7 @@
   :author "SATO Shinichi"
   :license "MIT"
   :version
-  "3.2.1"
+  "3.3.0"
   :depends-on
   (
    "mixalot" ; Audio mixer.

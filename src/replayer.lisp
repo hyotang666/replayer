@@ -193,6 +193,12 @@
       (sxql:select :*
         (sxql:from 'tag)))))
 
+(defun list-all-tag-maps ()
+  (with-db
+    (datafly:retrieve-all
+      (sxql:select :*
+        (sxql:from 'tag-map)))))
+
 (with-db
   (datafly:execute
     (sxql:create-table (file :if-not-exists t)
