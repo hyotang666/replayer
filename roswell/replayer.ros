@@ -35,21 +35,26 @@ exec ros -Q -- $0 "$@"
                          :debug nil
                          :port (getf options :port 5000)))
       (play
-        (assert args)
         (ql:quickload :dexador :silent t)
-       (uiop:symbol-call :dex :post
-                         (format nil "http://localhost:~A/play/file" (getf options :port 5000))
-                         :content `(("FILE" . ,(car args))))
-       (when (cdr args)
-         (dolist(arg args)
-           (handler-case
-             (uiop:symbol-call :dex :post
-                               (format nil "http://localhost:~A/play/push" (getf options :port 5000))
-                               :content `(("FILE" . ,arg)))
-             (error (c)
-               (if (typep c (uiop:find-symbol* "HTTP-REQUEST-FAILED" :dex))
-                 (warn "~S: ~S" (uiop:symbol-call :dex :response-status c) arg)
-                 (error c)))))))
+        (if (getf options :tag)
+          (uiop:symbol-call :dex :post
+                            (format nil "http://localhost:~A/play/tag" (getf options :port 5000))
+                            :content `(("TAG" . ,(getf options :tag))))
+          (progn
+            (assert args)
+            (uiop:symbol-call :dex :post
+                              (format nil "http://localhost:~A/play/file" (getf options :port 5000))
+                              :content `(("FILE" . ,(car args))))
+            (when (cdr args)
+              (dolist(arg args)
+                (handler-case
+                  (uiop:symbol-call :dex :post
+                                    (format nil "http://localhost:~A/play/push" (getf options :port 5000))
+                                    :content `(("FILE" . ,arg)))
+                  (error (c)
+                    (if (typep c (uiop:find-symbol* "HTTP-REQUEST-FAILED" :dex))
+                      (warn "~S: ~S" (uiop:symbol-call :dex :response-status c) arg)
+                      (error c)))))))))
       (tag
         (assert (<= 2 (length args)))
         (ql:quickload :replayer :silent t)
