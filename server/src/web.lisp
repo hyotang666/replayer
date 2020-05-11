@@ -51,7 +51,7 @@
       (replayer:play
         (replayer:make-tag :exp (let ((*read-eval*)
                                       (*readtable* (copy-readtable nil)))
-                                  (setf (readtable-case *readtable*) :reserve)
+                                  (setf (readtable-case *readtable*) :preserve)
                                   (read-from-string tag))))
     (error (c)
       `(400 #|Bad request|# nil (,(princ-to-string c))))
