@@ -45,6 +45,14 @@
     (:no-error (pathname)
       (replayer:play (list pathname)) `(200 #|ok|# nil ("Pushed")))))
 
+(defroute /play/tag.post ("/play/tag" :method :post)
+  (&key tag)
+  (handler-case (replayer:play (replayer:make-tag :exp tag))
+    (error (c)
+      `(400 #|Bad request|# nil (,(princ-to-string c))))
+    (:no-error (&rest args)
+      (declare (ignore args)) `(200 #|ok|# nil ("Done")))))
+
 (defroute /tag/file ("/tag/file" :method :post)
   (&key tag file)
   (handler-case (truename file)
