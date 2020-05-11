@@ -10,7 +10,8 @@ Music player in REPL.
 * Supported ros script.
 
 ## Usage
-### PLAY
+### REPL
+#### PLAY
 
 One file.
 
@@ -23,7 +24,7 @@ Some files.
 * (play (uiop:directory-files "~/Music/directory/" "*.wav"))
 ```
 
-### TAG
+#### TAG
 Adding tag to files.
 
 ```lisp
@@ -36,13 +37,15 @@ Play by tag.
 * (play (make-tag :exp "tag"))
 ```
 
-Logical expressions are supported.
+Logical expressions (i.e. and or) are supported.
+NOTE: NOT is not supported.
 
 ```lisp
 * (play (make-tag :exp '(and "tag1" "tag2" "tag3")))
 ```
 
 ### From shell
+#### Play
 Start replayer server.
 
 ```shell
@@ -61,10 +64,56 @@ Play some files
 replayer play $(ls music/directory/*.wav)
 ```
 
-Play list
+or
 
 ```shell
-cat play-list | xargs replayer play
+ls music/directory/*.wav | xargs replayer play
+```
+
+#### TAG
+Adding tag to files
+
+```shell
+replayer tag tag file1 file2 ...
+```
+
+Play by tag.
+
+```shell
+replayer play --tag tag
+```
+
+With logical expression.
+
+```shell
+replayer play --tag '(and tag1 tag2)'
+```
+
+### With http client.
+Replayer server is http server.
+
+You can send request for it with any http client.
+
+#### Play
+
+One file.
+
+```shell
+curl -d "FILE=~/path/to/file.wav" http://localhost:5000/play/file
+```
+
+Adding one more file.
+
+```shell
+curl -d "FILE=/path/to/file.wav" http://localhost:5000/play/push
+```
+
+#### TAG
+
+Play by tag.
+
+```shell
+curl -d "TAG=tag" http://localhost:5000/play/tag
 ```
 
 ## From developer
