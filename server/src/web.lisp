@@ -47,7 +47,10 @@
 
 (defroute /play/tag.post ("/play/tag" :method :post)
   (&key tag)
-  (handler-case (replayer:play (replayer:make-tag :exp tag))
+  (handler-case
+      (replayer:play
+        (replayer:make-tag :exp (let ((*read-eval*))
+                                  (read-from-string tag))))
     (error (c)
       `(400 #|Bad request|# nil (,(princ-to-string c))))
     (:no-error (&rest args)
