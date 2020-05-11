@@ -187,6 +187,12 @@
                                                                           :replayer)))))))
        ,@body)))
 
+(defun list-all-tags ()
+  (with-db
+    (datafly:retrieve-all
+      (sxql:select :*
+        (sxql:from 'tag)))))
+
 (with-db
   (datafly:execute
     (sxql:create-table (file :if-not-exists t)
