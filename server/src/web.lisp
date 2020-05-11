@@ -49,7 +49,9 @@
   (&key tag)
   (handler-case
       (replayer:play
-        (replayer:make-tag :exp (let ((*read-eval*))
+        (replayer:make-tag :exp (let ((*read-eval*)
+                                      (*readtable* (copy-readtable nil)))
+                                  (setf (readtable-case *readtable*) :reserve)
                                   (read-from-string tag))))
     (error (c)
       `(400 #|Bad request|# nil (,(princ-to-string c))))
