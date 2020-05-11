@@ -253,7 +253,7 @@
                 (datafly:retrieve-all
                   (sxql:select :tag-map.file
                     (sxql:from 'tag-map)
-                    (sxql:where (:= 'tag tag))))))
+                    (sxql:where (:= 'tag (princ-to-string tag)))))))
       (ecase (car tag)
         (and
          (reduce (lambda (a b) (intersection a b :test #'equal))
