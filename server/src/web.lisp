@@ -43,6 +43,19 @@
   (setf replayer:*shuffle* (not replayer:*shuffle*))
   `(200 #|ok|# nil ("Done")))
 
+(defroute /repeat.post ("/repeat" :method :post)
+  (&key mode)
+  (cond
+   ((equal "one" mode) (setq replayer:*repeat* :one)
+    `(200 #|ok|# nil ("repeat=one")))
+   ((equal "all" mode) (setq replayer:*repeat* :all)
+    `(200 #|ok|# nil ("repeat=all")))
+   ((equal "false" mode) (setq replayer:*repeat* nil)
+    `(200 #|ok|# nil ("repeat=false")))
+   (t
+    `(400 #|Bad request|# nil
+      (,(format nil "Unknown repeat mode: ~S~%" mode))))))
+
 (defroute /play/push.post ("/play/push" :method :post)
   (&key file)
   (handler-case (truename file)
