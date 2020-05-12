@@ -39,6 +39,10 @@
 
 (defroute "/stop" () (replayer:stop) `(200 #|ok|# nil ("Stop")))
 
+(defroute "/toggle/shuffle" ()
+  (setf replayer:*shuffle* (not replayer:*shuffle*))
+  `(200 #|ok|# nil ("Done")))
+
 (defroute /play/push.post ("/play/push" :method :post)
   (&key file)
   (handler-case (truename file)
