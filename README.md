@@ -1,4 +1,4 @@
-# REPLAYER 3.1.1
+# REPLAYER 3.5.0
 ## What is this?
 Music player in REPL.
 
@@ -37,11 +37,10 @@ Play by tag.
 * (play (make-tag :exp "tag"))
 ```
 
-Logical expressions (i.e. and or) are supported.
-NOTE: NOT is not supported.
+Logical expressions (i.e. `and`, `or` and  `not`) are supported.
 
 ```lisp
-* (play (make-tag :exp '(and "tag1" "tag2" "tag3")))
+* (play (make-tag :exp '(and "tag1" "tag2" (not "tag3"))))
 ```
 
 ### From shell
