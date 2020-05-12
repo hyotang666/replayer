@@ -309,6 +309,30 @@
             (sxql:delete-from :file
               (sxql:where (:= 'pathname (getf map :file))))))))))
 
+(defun remove-tag-map (tag file)
+  (setf tag (princ-to-string tag)
+        file (namestring (truename file)))
+  (with-db
+    (datafly:execute
+      (sxql:delete-from :tag-map
+        (sxql:where
+         (:and (:= 'tag tag)
+               (:= 'file file)))))
+    (unless (datafly:retrieve-one
+              (sxql:select :*
+                (sxql:from 'tag-map)
+                (sxql:where (:= 'tag tag))))
+      (datafly:execute
+        (sxql:delete-from :tag
+          (sxql:where (:= 'tag tag)))))
+    (unless (datafly:retrieve-one
+              (sxql:select :*
+                (sxql:from 'tag-map)
+                (sxql:where (:= 'file file))))
+      (datafly:execute
+        (sxql:delete-from :file
+          (sxql:where (:= 'pathname file)))))))
+
 ;;;; TAG
 
 (defstruct tag exp)
