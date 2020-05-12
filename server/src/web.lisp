@@ -37,6 +37,8 @@
     (:no-error (&rest args)
       (declare (ignore args)) `(200 #|ok|# nil ("Done")))))
 
+(defroute "/stop" () (replayer:stop) `(200 #|ok|# nil ("Stop")))
+
 (defroute /play/push.post ("/play/push" :method :post)
   (&key file)
   (handler-case (truename file)
