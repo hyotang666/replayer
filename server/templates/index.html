@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
         <div id="control">
-                <button type="button" id="play">▶</button>
+                <button type="button" id="play" onclick="play()">▶</button>
                 <button type="button" id="repeat">repeat</button>
                 <button type="button" id="shuffle">shuffle</button>
         </div>
@@ -19,6 +19,24 @@
                         let index = document.getElementById("playlist").options.selectedIndex;
                         let option = document.getElementById("playlist").options[index];
                         option.text = prompt();
+                }
+
+                function play (){
+                        let firstp = true;
+                        for (let option of document.getElementById("playlist").options){
+                                if (firstp){
+                                        let http = new XMLHttpRequest();
+                                        http.open("post", "/play/file", true);
+                                        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                        http.send("FILE=" + option.text);
+                                        firstp = false;
+                                } else {
+                                        let http = new XMLHttpRequest();
+                                        http.open("post", "/play/push", true);
+                                        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                        http.send("FILE=" + option.text);
+                                }
+                        }
                 }
         </script>
         </div>
