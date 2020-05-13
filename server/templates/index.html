@@ -14,6 +14,13 @@
                                 <option></option>
                         </select>
                 </form>
+        <script>
+                function eltInput () {
+                        let index = document.getElementById("playlist").options.selectedIndex;
+                        let option = document.getElementById("playlist").options[index];
+                        option.text = prompt();
+                }
+        </script>
         </div>
 </div>
 {% endblock %}
