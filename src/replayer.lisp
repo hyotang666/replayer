@@ -329,11 +329,10 @@
       (dolist (map tag-maps)
         (when (zerop
                 (getf
-                  (with-db
-                    (datafly:retrieve-one
-                      (sxql:select ((:count :*))
-                        (sxql:from 'tag-map)
-                        (sxql:where (:= 'tag (getf map :tag))))))
+                  (datafly:retrieve-one
+                    (sxql:select ((:count :*))
+                      (sxql:from 'tag-map)
+                      (sxql:where (:= 'tag (getf map :tag)))))
                   :|COUNT(*)|))
           (datafly:execute
             (sxql:delete-from :tag
