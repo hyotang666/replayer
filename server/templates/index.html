@@ -4,7 +4,7 @@
 <div class="container">
         <div id="control">
                 <button type="button" id="play" onclick="play()">▶</button>
-                <button type="button" id="repeat">repeat</button>
+                <button type="button" id="repeat" onclick="repeat()">repeat</button>
                 <button type="button" id="shuffle" onclick="shuffle()">shuffle</button>
         </div>
         <div id="playlist-container">
@@ -43,6 +43,17 @@
                         let http = new XMLHttpRequest ();
                         http.open ("get", "/toggle/shuffle", true);
                         http.send ();
+                }
+
+                function repeat () {
+                        let mode = document.getElementById("repeat");
+                        let modeCircle = { "repeat":"one", "one":"all", "all":"false"};
+                        let nextMode = modeCircle[mode.textContent];
+                        let http = new XMLHttpRequest ();
+                        http.open ("post", "/repeat", true);
+                        http.setRequestHeader ("Content-type", "application/x-www-form-urlencoded");
+                        http.send ("MODE=" + nextMode);
+                        mode.textContent = nextMode
                 }
         </script>
         </div>
