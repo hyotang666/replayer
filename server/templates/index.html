@@ -1,7 +1,19 @@
 {% extends "layouts/default.html" %}
 {% block title %}Welcome to Caveman2{% endblock %}
 {% block content %}
-<div id="main">
-  Welcome to <a href="http://8arrow.org/caveman/">Caveman2</a>!
+<div class="container">
+        <div id="control">
+                <button type="button" id="play">▶</button>
+                <button type="button" id="repeat">repeat</button>
+                <button type="button" id="shuffle">shuffle</button>
+        </div>
+        <div id="playlist-container">
+                <label for="playlist">Play list</label>
+                <form>
+                        <select id="playlist" name="PLAY-LIST" size="1" multiple>
+                                <option></option>
+                        </select>
+                </form>
+        </div>
 </div>
 {% endblock %}
