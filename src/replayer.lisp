@@ -290,7 +290,7 @@
   (setf tag (princ-to-string tag))
   (with-db
     (let ((tag-maps
-           (datafly:execute
+           (datafly:retrieve-all
              (sxql:select :*
                (sxql:from 'tag-map)
                (sxql:where (:= 'tag tag))))))
@@ -301,10 +301,13 @@
         (sxql:delete-from :tag-map
           (sxql:where (:= 'tag tag))))
       (dolist (map tag-maps)
-        (unless (datafly:execute
-                  (sxql:select :*
-                    (sxql:from 'tag-map)
-                    (sxql:where (:= 'file (getf map :file)))))
+        (when (zerop
+                (getf
+                  (datafly:retrieve-one
+                    (sxql:select ((:count :*))
+                      (sxql:from 'tag-map)
+                      (sxql:where (:= 'file (getf map :file)))))
+                  :|COUNT(*)|))
           (datafly:execute
             (sxql:delete-from :file
               (sxql:where (:= 'pathname (getf map :file))))))))))
