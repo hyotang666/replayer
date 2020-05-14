@@ -12,6 +12,7 @@
         </div>
         <div id="playlist-container">
                 <label for="playlist">Play list</label>
+                <button type="button" id="add-elt" onclick="addElt()">append</button>
                 <form>
                         <select id="playlist" name="PLAY-LIST" size="1" multiple>
                                 <option></option>
@@ -70,6 +71,13 @@
                         http.setRequestHeader ("Content-type", "application/x-www-form-urlencoded");
                         http.send ("MODE=" + nextMode);
                         mode.textContent = nextMode
+                }
+
+                function addElt () {
+                        let option = document.createElement("option");
+                        option["ondblclick"] = eltInput;
+                        option.text = prompt();
+                        document.getElementById("playlist").appendChild(option);
                 }
         </script>
         </div>
