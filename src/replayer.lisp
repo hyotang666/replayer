@@ -158,7 +158,7 @@
         (skip))
       (setf *play*
               (mixalot:mixer-add-streamer *mixer*
-                                          (mixalot:make-fast-vector-streamer-interleaved-stereo
+                                          (mixalot:make-vector-streamer-interleaved-stereo
                                             (r-iff:data<-chunk
                                               (car
                                                 (r-iff:retrieve "data"
