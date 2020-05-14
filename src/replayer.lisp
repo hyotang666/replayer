@@ -32,6 +32,12 @@
       (setf (cdar *queue*) (setf (car *queue*) (list item))))
   *queue*)
 
+(defun q-head-push (item)
+  (if (null (car *queue*))
+      (setf (cdr *queue*) (setf (car *queue*) (list item)))
+      (setf (cdr *queue*) (cons item (cdr *queue*))))
+  *queue*)
+
 (defun q-pop ()
   (if (eq (car *queue*) (cdr *queue*)) ; Last one.
       (prog1 (cadr *queue*) (setf *queue* (cons nil nil)))
@@ -139,14 +145,24 @@
                   (t (warn "NIY file type ~S" type))))))))
 
 (defmethod play ((mp3 mixalot-mp3:mp3-streamer))
-  (setf *play* (mixalot:mixer-add-streamer *mixer* mp3)))
+  (if *play*
+      (let ((*shuffle*))
+        (q-head-push mp3)
+        (skip))
+      (setf *play* (mixalot:mixer-add-streamer *mixer* mp3))))
 
 (defmethod play ((wav r-iff:group))
-  (setf *play*
-          (mixalot:mixer-add-streamer *mixer*
-                                      (mixalot:make-fast-vector-streamer-interleaved-stereo
-                                        (r-iff:data<-chunk
-                                          (car (r-iff:retrieve "data" wav)))))))
+  (if *play*
+      (let ((*shuffle*))
+        (q-head-push wav)
+        (skip))
+      (setf *play*
+              (mixalot:mixer-add-streamer *mixer*
+                                          (mixalot:make-fast-vector-streamer-interleaved-stereo
+                                            (r-iff:data<-chunk
+                                              (car
+                                                (r-iff:retrieve "data"
+                                                                wav))))))))
 
 (defmethod play ((list list))
   (q-append list)
@@ -157,7 +173,11 @@
           (q-pop)))))
 
 (defmethod play ((streamer mixalot:vector-streamer))
-  (setf *play* (mixalot:mixer-add-streamer *mixer* streamer)))
+  (if *play*
+      (let ((*shuffle*))
+        (q-head-push streamer)
+        (skip))
+      (setf *play* (mixalot:mixer-add-streamer *mixer* streamer))))
 
 ;;;; SKIP
 
