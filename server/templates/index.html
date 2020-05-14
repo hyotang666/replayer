@@ -8,6 +8,8 @@
                 <button type="button" id="repeat" onclick="repeat()">repeat</button>
                 <button type="button" id="shuffle" onclick="shuffle()">shuffle</button>
         </div>
+        <div id="alert">
+        </div>
         <div id="playlist-container">
                 <label for="playlist">Play list</label>
                 <form>
@@ -22,7 +24,7 @@
                         option.text = prompt();
                 }
 
-                function play (){
+                function play () {
                         let firstp = true;
                         for (let option of document.getElementById("playlist").options){
                                 if (firstp){
@@ -30,6 +32,14 @@
                                         http.open("post", "/play/file", true);
                                         http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                                         http.send("FILE=" + option.text);
+                                        http.onreadystatechange = function () {
+                                                if (http.readyState === 4 && http.status != 200){
+                                                        document.getElementById("alert").textContent = http.status;
+                                                } else {
+                                                        document.getElementById("alert").textContent = http.responseText;
+                                                }
+
+                                        }
                                         firstp = false;
                                 } else {
                                         let http = new XMLHttpRequest();
