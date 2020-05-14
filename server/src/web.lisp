@@ -28,7 +28,12 @@
 ;;
 ;; Routing rules
 
-(defroute "/" () (render #P"index.html"))
+(defroute "/" ()
+  (render #P"index.html"
+          `(:repeat
+            ,(ecase replayer:*repeat*
+               ((:one :all) replayer:*repeat*)
+               ((nil) "false")))))
 
 (defroute ("/play/file" :method :post) (&key file)
   (handler-case (replayer:play file)
