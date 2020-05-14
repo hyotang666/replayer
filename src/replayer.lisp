@@ -144,6 +144,12 @@
                    (play (mixalot-mp3:make-mp3-streamer (namestring pathname))))
                   (t (warn "NIY file type ~S" type))))))))
 
+(defmethod mixalot:streamer-cleanup :around
+           ((streamer mixalot-mp3:mp3-streamer) (mixer player))
+  (if *repeat*
+      nil ; do nothing.
+      (call-next-method)))
+
 (defmethod play ((mp3 mixalot-mp3:mp3-streamer))
   (if *play*
       (let ((*shuffle*))
