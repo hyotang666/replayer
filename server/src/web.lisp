@@ -36,11 +36,22 @@
                ((nil) "false")))))
 
 (defroute ("/play/file" :method :post) (&key file)
-  (handler-case (replayer:play file)
-    (replayer:missing-file (c)
-      `(404 #|Not Found|# nil (,(princ-to-string c))))
-    (:no-error (&rest args)
-      (declare (ignore args)) `(200 #|ok|# nil ("Done")))))
+  (if (atom file)
+      (handler-case (replayer:play file)
+        (replayer:missing-file (c)
+          `(404 #|Not Found|# nil (,(princ-to-string c))))
+        (:no-error (&rest args)
+          (declare (ignore args)) `(200 #|ok|# nil ("Done"))))
+      ;; Otherwise form data is binary file with multipart/form-data.
+      (destructuring-bind
+          (stream filename mime-type)
+          file
+        (cond
+         ((equal "audio/x-wav" mime-type)
+          (replayer:play (wav-parser:wav stream)) `(200 #|ok|# nil ("Done")))
+         (t
+          `(400 #|Bad request|# nil
+            (,(format nil "~S ~S ~S" stream filename mime-type))))))))
 
 (defroute "/stop" () (replayer:stop) `(200 #|ok|# nil ("Stop")))
 

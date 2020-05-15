@@ -10,7 +10,7 @@
         </div>
         <div id="alert">
         </div>
-        <div id="playlist-container">
+        <div id="playlist-container" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
                 <label for="playlist">Play list</label>
                 <button type="button" id="add-elt" onclick="addElt()">append</button>
                 <form>
@@ -24,11 +24,18 @@
                         option.text = prompt();
                 }
 
+                var files = {};
+
                 function play () {
                         let post = function (to, text) {
+                                let form = new FormData ();
                                 let http = new XMLHttpRequest ();
+                                if (0 === text.search(/\[file\]*/)){
+                                        form.append("FILE", files[text.slice(6)]);
+                                } else {
+                                        form.append("FILE", text);
+                                }
                                 http.open ("post", to, true);
-                                http.setRequestHeader ("Content-type", "application/x-www-form-urlencoded");
                                 http.onreadystatechange = function () {
                                         if (http.readyState === 4 && http.status === 200) {
                                                 document.getElementById("alert").textContent = http.responseText;
@@ -36,7 +43,7 @@
                                                 document.getElementById("alert").textContent = http.status;
                                         } // else if
                                 }
-                                http.send ("FILE=" + text);
+                                http.send (form);
                         }
                         let firstp = true;
                         for (let option of document.getElementById("playlist").options){
@@ -72,11 +79,35 @@
                         mode.textContent = nextMode
                 }
 
-                function addElt () {
+                function addElt (elt) {
                         let option = document.createElement("option");
                         option["ondblclick"] = eltInput;
-                        option.text = prompt();
+                        option.text = elt||prompt();
                         document.getElementById("playlist").appendChild(option);
+                }
+
+                function dropHandler (event) {
+                        event.preventDefault();
+                        if (event.dataTransfer.items) {
+                                // Use DataTransferItemList interface to access the file(s)
+                                for (var i = 0; i < event.dataTransfer.items.length; i++) {
+                                        // If dropped items aren't files, reject them
+                                        if (event.dataTransfer.items[i].kind === 'file') {
+                                                let file = event.dataTransfer.items[i].getAsFile();
+                                                addElt("[file]" + file.name);
+                                                files[file.name] = file;
+                                        }
+                                }
+                        } else {
+                                // Use DataTransfer interface to access the file(s) FIXME NIY.
+                                for (var i = 0; i < event.dataTransfer.files.length; i++) {
+                                        console.log('... file[' + i + '].name = ' + event.dataTransfer.files[i].name);
+                                }
+                        }
+                }
+
+                function dragOverHandler(ev) {
+                        ev.preventDefault();
                 }
         </script>
         </div>
