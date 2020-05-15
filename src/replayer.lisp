@@ -403,3 +403,13 @@
     (if files
         (play files)
         (warn "Not exists tag ~S" tag))))
+
+;;;; MISCELLANEOUS HELPER.
+
+(defun repository-files (directory &optional (pattern "*"))
+  (uiop:while-collecting (acc)
+    (uiop:collect-sub*directories directory (constantly t) (constantly t)
+                                  (lambda (directory)
+                                    (mapc #'acc
+                                          (uiop:directory-files directory
+                                                                pattern))))))
