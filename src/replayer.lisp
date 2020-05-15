@@ -200,6 +200,13 @@
       (q-clear)
       (skip))))
 
+;;;; PAUSE
+
+(defun pause ()
+  (if (mixalot:streamer-paused-p *play* *mixer*)
+      (mixalot:streamer-unpause *play* *mixer*)
+      (mixalot:streamer-pause *play* *mixer*)))
+
 ;;;; Database
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
