@@ -278,8 +278,6 @@
                 (sxql:insert-into :tag-map
                   (sxql:set= :tag tag :file file))))))))))
 
-(defvar *not* nil)
-
 (defun tag-files (tag)
   (if (atom tag)
       (with-db
@@ -287,11 +285,7 @@
                 (datafly:retrieve-all
                   (sxql:select :tag-map.file
                     (sxql:from 'tag-map)
-                    (sxql:where
-                     `(,(if *not*
-                            ':!=
-                            ':=)
-                       tag ,(princ-to-string tag)))))))
+                    (sxql:where `(:= tag ,(princ-to-string tag)))))))
       (ecase (car tag)
         (and
          (reduce (lambda (a b) (intersection a b :test #'equal))
@@ -302,7 +296,19 @@
         (not
          (let ((*not* t))
            (assert (typep tag '(cons (eql not) (cons * null))))
-           (tag-files (cadr tag)))))))
+           (with-db
+             (mapcar (lambda (elt) (getf elt :pathname))
+                     (datafly:retrieve-all
+                       (sxql:select :file.pathname
+                         (sxql:from 'file)
+                         (sxql:where
+                          (:not-in 'file.pathname
+                           (sxql:select :file.pathname
+                             (sxql:from 'file)
+                             (sxql:inner-join 'tag-map :on
+                                              (:= 'tag-map.file 'file.pathname))
+                             (sxql:where
+                              (:= 'tag-map.tag (cadr tag)))))))))))))))
 
 (defun file-tags (file)
   (with-db
