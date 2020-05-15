@@ -55,6 +55,11 @@ exec ros -Q -- $0 "$@"
                     (if (typep c (uiop:find-symbol* "HTTP-REQUEST-FAILED" :dex))
                       (warn "~S: ~S" (uiop:symbol-call :dex :response-status c) arg)
                       (error c)))))))))
+      (stop
+        (ql:quickload :dexador :silent t)
+        (uiop:symbol-call :dex :get
+                          (format nil "http://localhost:~A/stop" (getf options :port 5000))))
+
       (tag
         (assert (<= 2 (length args)))
         (ql:quickload :replayer :silent t)
@@ -65,6 +70,6 @@ exec ros -Q -- $0 "$@"
                 (asdf:system-version (asdf:find-system :replayer))))
       (otherwise
         (format t "~<Supported subcommands: ~;~{~A~^~:@_~}~%~;~:>"
-                '(("start" "play" "version")))))))
+                '(("start" "play" "stop" "version")))))))
 
 ;;; vim: set ft=lisp lisp:
