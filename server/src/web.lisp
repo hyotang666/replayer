@@ -59,7 +59,10 @@
   (setf replayer:*shuffle* (not replayer:*shuffle*))
   `(200 #|ok|# nil ("Done")))
 
-(defroute "/toggle/pause" () (replayer:pause) `(200 #|ok|# nil ("Done")))
+(defroute "/toggle/pause" ()
+  (ecase (replayer:pause)
+    (:paused `(200 #|ok|# nil ("Paused")))
+    ((t) `(200 #|ok|# nil ("Unpause")))))
 
 (defroute /repeat.post ("/repeat" :method :post)
   (&key mode)
