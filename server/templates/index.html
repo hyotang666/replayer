@@ -41,7 +41,7 @@
                                         if (http.readyState === 4 && http.status === 200) {
                                                 document.getElementById("alert").textContent = http.responseText;
                                         } else if (http.readyState === 4 && http.status !== 200) {
-                                                document.getElementById("alert").textContent = http.status;
+                                                document.getElementById("alert").textContent = http.status + http.responseText;
                                         } // else if
                                 }
                                 http.send (form);
