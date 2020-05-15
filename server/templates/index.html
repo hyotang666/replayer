@@ -55,6 +55,9 @@
                                         post ("/play/push", option.text);
                                 } // else if
                         } // for
+                        if (firstp){
+                                document.getElementById("alert").textContent = "No file selected.";
+                        }
                 } // play
 
                 function stop () {
