@@ -49,6 +49,26 @@
         (cond
          ((equal "audio/x-wav" mime-type)
           (replayer:play (wav-parser:wav stream)) `(200 #|ok|# nil ("Done")))
+         ((equal "audio/mpeg" mime-type)
+          (let* ((pathname
+                  (ensure-directories-exist
+                    (merge-pathnames (format nil "audio/~A" filename)
+                                     *application-root*)))
+                 (exist? (probe-file pathname)))
+            (if exist?
+                (progn (replayer:play pathname) `(200 #|ok|# nil ("Done")))
+                (uiop:with-current-directory ((uiop:pathname-directory-pathname
+                                                pathname))
+                  (with-open-file (out pathname :direction :output
+                                   :element-type '(unsigned-byte 8)
+                                   :if-does-not-exist :create
+                                   :if-exists :error)
+                    (uiop:copy-stream-to-stream stream out
+                                                :element-type '(unsigned-byte
+                                                                8)
+                                                :buffer-size #x1000))
+                  (replayer:play pathname)
+                  `(200 #|ok|# nil ("Done"))))))
          (t
           `(400 #|Bad request|# nil
             (,(format nil "~S ~S ~S" stream filename mime-type))))))))
