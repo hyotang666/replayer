@@ -101,8 +101,19 @@
                                         // If dropped items aren't files, reject them
                                         if (event.dataTransfer.items[i].kind === 'file') {
                                                 let file = event.dataTransfer.items[i].getAsFile();
-                                                addElt("[file]" + file.name);
-                                                files[file.name] = file;
+                                                if (0 === file.type.search(/text*/)||"" === file.type){
+                                                        let reader = new FileReader();
+                                                        reader.readAsText(file);
+                                                        reader.onload = function (){
+                                                                reader.result
+                                                                        .split(/\n/)
+                                                                        .filter(function(x){return x!==""})
+                                                                        .forEach(addElt);
+                                                        }
+                                                } else {
+                                                        addElt("[file]" + file.name);
+                                                        files[file.name] = file;
+                                                }
                                         }
                                 }
                         } else {
