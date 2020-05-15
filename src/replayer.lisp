@@ -14,11 +14,14 @@
            #:play
            #:stop
            #:skip
+           #:pause
            ;; Tag operations
            #:make-tag
            #:tag-files
            #:file-tags
-           #:tag))
+           #:tag
+           ;; Miscellenious helpers
+           #:repository-files))
 
 (in-package :replayer)
 
