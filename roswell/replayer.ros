@@ -59,7 +59,11 @@ exec ros -Q -- $0 "$@"
         (ql:quickload :dexador :silent t)
         (uiop:symbol-call :dex :get
                           (format nil "http://localhost:~A/stop" (getf options :port 5000))))
-
+      (pause
+        (ql:quickload :dexador :silent t)
+        (uiop:symbol-call :dex :get
+                          (format nil "http://localhost:~A/toggle/pause"
+                                  (getf options :port 5000))))
       (tag
         (assert (<= 2 (length args)))
         (ql:quickload :replayer :silent t)
@@ -70,6 +74,6 @@ exec ros -Q -- $0 "$@"
                 (asdf:system-version (asdf:find-system :replayer))))
       (otherwise
         (format t "~<Supported subcommands: ~;~{~A~^~:@_~}~%~;~:>"
-                '(("start" "play" "stop" "version")))))))
+                '(("start" "play" "stop" "pause" "version")))))))
 
 ;;; vim: set ft=lisp lisp:
