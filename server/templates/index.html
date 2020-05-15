@@ -1,23 +1,23 @@
 {% extends "layouts/default.html" %}
 {% block title %}Welcome to Caveman2{% endblock %}
 {% block content %}
-<div class="container">
-        <div id="control">
-                <button type="button" id="play" onclick="play()">▶</button>
-                <button type="button" id="pause" onclick="pause()">〓</button>
-                <button type="button" id="stop" onclick="stop()">■</button>
-                <button type="button" id="repeat" onclick="repeat()">{{repeat}}</button>
-                <button type="button" id="shuffle" onclick="shuffle()">shuffle</button>
+<div class="container-fluid">
+        <div id="control" class="container-fluid">
+                <button type="button" id="play" onclick="play()" class="btn btn-outline-info">▶</button>
+                <button type="button" id="pause" onclick="pause()" class="btn btn-outline-info">〓</button>
+                <button type="button" id="stop" onclick="stop()" class="btn btn-outline-info">■</button>
+                <button type="button" id="repeat" onclick="repeat()" class="btn btn-outline-info">{{repeat}}</button>
+                <button type="button" id="shuffle" onclick="shuffle()" class="btn btn-outline-info">shuffle</button>
         </div>
-        <div id="alert">
+        <div id="alert" class="container-fluid alert alert-light">
         </div>
-        <div id="playlist-container" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+        <div id="playlist-container" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" class="container-fluid">
                 <label for="playlist">Play list</label>
-                <button type="button" id="add-elt" onclick="addElt()">append</button>
                 <form>
-                        <select id="playlist" name="PLAY-LIST" size="20" multiple>
+                        <select id="playlist" name="PLAY-LIST" size="0" multiple class="form-control">
                         </select>
                 </form>
+                <button type="button" id="add-elt" onclick="addElt()" class="btn btn-outline-info">append</button>
         <script>
                 function eltInput () {
                         let index = document.getElementById("playlist").options.selectedIndex;
@@ -90,7 +90,9 @@
                         let option = document.createElement("option");
                         option["ondblclick"] = eltInput;
                         option.text = elt||prompt();
-                        document.getElementById("playlist").appendChild(option);
+                        let playlist = document.getElementById("playlist");
+                        playlist.appendChild(option);
+                        playlist.setAttribute("size", 1+parseInt(playlist.getAttribute("size")));
                 }
 
                 function dropHandler (event) {
