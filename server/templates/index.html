@@ -6,6 +6,7 @@
                 <button type="button" id="play" onclick="play()" class="btn btn-outline-info">▶</button>
                 <button type="button" id="pause" onclick="pause()" class="btn btn-outline-info">〓</button>
                 <button type="button" id="stop" onclick="stop()" class="btn btn-outline-info">■</button>
+                <button type="button" id="skip" onclick="play()" class="btn btn-outline-info">⏩</button>
                 <button type="button" id="repeat" onclick="repeat()" class="btn btn-outline-info">{{repeat}}</button>
                 <button type="button" id="shuffle" onclick="shuffle()" class="btn btn-outline-info">shuffle</button>
         </div>
@@ -76,6 +77,12 @@
                         let http = new XMLHttpRequest ();
                         http.open ("get", "/toggle/shuffle", true);
                         http.send ();
+                }
+                
+                function skip () {
+                        let http = new XMLHttpRequest ();
+                        http.open ("get", "/skip", true);
+                        http.send();
                 }
 
                 function repeat () {
