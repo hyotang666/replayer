@@ -4,6 +4,7 @@
 <div class="container">
         <div id="control">
                 <button type="button" id="play" onclick="play()">▶</button>
+                <button type="button" id="pause" onclick="pause()">〓</button>
                 <button type="button" id="stop" onclick="stop()">■</button>
                 <button type="button" id="repeat" onclick="repeat()">{{repeat}}</button>
                 <button type="button" id="shuffle" onclick="shuffle()">shuffle</button>
@@ -60,6 +61,12 @@
                         let http = new XMLHttpRequest ();
                         http.open ("get", "/stop", true);
                         http.send ();
+                }
+
+                function pause () {
+                        let http = new XMLHttpRequest ();
+                        http.open ("get", "/toggle/pause", true);
+                        http.send();
                 }
 
                 function shuffle () {
