@@ -134,6 +134,12 @@
 
 (defmethod play ((string string)) (play (pathname string)))
 
+(defun text-file-p (pathname)
+  (and (search "text"
+               (uiop:run-program (format nil "file ~A" (truename pathname))
+                                 :output :string))
+       t))
+
 (defmethod play ((pathname pathname))
   (handler-case (truename pathname)
     (error ()
@@ -145,6 +151,8 @@
             (cond ((string= "wav" type) (play (wav-parser:wav pathname)))
                   ((string= "mp3" type)
                    (play (mixalot-mp3:make-mp3-streamer (namestring pathname))))
+                  ((text-file-p pathname)
+                   (play (uiop:read-file-lines pathname)))
                   (t (warn "NIY file type ~S" type))))))))
 
 (defmethod mixalot:streamer-cleanup :around
